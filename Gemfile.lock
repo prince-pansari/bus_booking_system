@@ -68,6 +68,8 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
+    apipie-rails (0.5.19)
+      rails (>= 4.1)
     bindex (0.8.1)
     bootsnap (1.13.0)
       msgpack (~> 1.2)
@@ -214,11 +216,12 @@ PLATFORMS
   arm64-darwin-21
 
 DEPENDENCIES
+  apipie-rails
   bootsnap
   capybara
   debug
   importmap-rails
-  jbuilder
+  jbuilder (~> 2.10)
   pg (~> 1.1)
   puma (~> 5.0)
   rails (~> 7.0.3, >= 7.0.3.1)

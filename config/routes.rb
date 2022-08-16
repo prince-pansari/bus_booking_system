@@ -3,4 +3,9 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "articles#index"
+  namespace :api do
+    resources :route, only: %i(show), format: "json" do
+      get :get_all_routes, on: :collection
+    end
+  end
 end
