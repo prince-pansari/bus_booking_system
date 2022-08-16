@@ -7,5 +7,8 @@ Rails.application.routes.draw do
     resources :route, only: %i(show), format: "json" do
       get :get_all_routes, on: :collection
     end
+    resources :bus, only: %i(), format: "json"  do
+      get :get_bus_detail, on: :collection, to: 'bus#get_bus_detail'
+    end
   end
 end
