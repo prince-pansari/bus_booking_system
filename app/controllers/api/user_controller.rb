@@ -37,6 +37,7 @@ class Api::UserController < ApplicationController
         row = OtpVerification.find_by(user_id: params[:user_id], otp: params[:otp])
         if row.nil?
             render json: {error: 'Incorrect OTP'}, status: :unprocessable_entity
+            return
         end
         token = generate_token
         user = User.find(params[:user_id])
