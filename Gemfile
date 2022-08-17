@@ -51,6 +51,7 @@ gem "bootsnap", require: false
 
 
 gem 'apipie-rails'
+gem 'httparty'
 
 
 group :development, :test do

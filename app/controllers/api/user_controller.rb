@@ -2,20 +2,58 @@ class Api::UserController < ApplicationController
 
 
     api :POST, 'api/user/login'
-    param :phone, String, required: true
-    param :name, String, required: true
-
+    param :number, String, required: true
+    param :name, String, required: false
     def login
-        if validatephone params[:phone] 
-            logger.debug 'true'
-        else
-            logger.debug 'false'
+        user = User.find_by(number: params[:number])
+        if user.nil?
+            user = User.create({number: params[:number],
+                               name: params[:name]})
         end
-        render json: {msg: params[:phone]}, status: :ok
+        otp = six_digit_rand
+        row = OtpVerification.find_by(user_id: user.id)
+        if row.nil?
+            OtpVerification.create({user_id: user.id, otp: otp})
+        else
+            row.otp = otp
+            row.save
+        end
+
+        response = HTTParty.post("https://www.fast2sms.com/dev/bulkV2",
+                                 :body => {variables_values: otp, route: 'otp', numbers: params[:number].to_i},
+                                 :headers => {authorization: 'U6WAcLYpfJwou58SqmiX4MyHgFQxEl7GnjKN01dkrtIsVaCR9vuv7thRdSjk83wEPAoT29gpIW41r5GM'}
+        )
+        if response.body['return']
+            render json: {user_id: user.id}, status: :ok
+        else
+            render json: {error: 'Error!!'}, status: :unprocessable_entity
+        end
     end
 
+    api :POST, 'api/user/verify_otp'
+    param :user_id, Integer, required: true
+    param :otp, Integer, required: true
+    def verify_otp
+        row = OtpVerification.find_by(user_id: params[:user_id], otp: params[:otp])
+        if row.nil?
+            render json: {error: 'Incorrect OTP'}, status: :unprocessable_entity
+        end
+        token = generate_token
+        user = User.find(params[:user_id])
+        user.verified = true
+        user.token = token
+        user.save
+        render json: {token: token}, status: :ok
+    end
 
-    def validatephone(phone)
-        return if phone.match('/^(\+\d{1,3}[- ]?)?\d{10}$/')
+    def six_digit_rand
+        (SecureRandom.random_number(9000) + 1000).to_i
+    end
+
+    def generate_token
+        loop do
+            token = SecureRandom.hex(16)
+            break token unless User.where(token: token).exists?
+        end
     end
 end

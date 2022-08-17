@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 
     resources :user, only: %i() do
       post :login, on: :collection, to: 'user#login'
+      post :verify_otp, on: :collection, to: 'user#verify_otp'
     end
   end
 end
