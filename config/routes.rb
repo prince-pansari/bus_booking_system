@@ -15,5 +15,9 @@ Rails.application.routes.draw do
       post :book_ticket, on: :collection, to: 'ticket#book_ticket'
       get :get_tickets, on: :collection, to: 'ticket#get_tickets'
     end
+
+    resources :user, only: %i() do
+      post :login, on: :collection, to: 'user#login'
+    end
   end
 end

@@ -32,3 +32,6 @@
 
 
 .idea/
+
+# Ignore the .env file
+.env
