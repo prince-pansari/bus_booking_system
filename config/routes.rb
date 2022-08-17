@@ -10,5 +10,9 @@ Rails.application.routes.draw do
     resources :bus, only: %i(), format: "json"  do
       get :get_bus_detail, on: :collection, to: 'bus#get_bus_detail'
     end
+
+    resources :ticket, only: %i() do
+      post :book_ticket, on: :collection, to: 'ticket#book_ticket'
+    end
   end
 end
