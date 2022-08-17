@@ -2,7 +2,7 @@ class Api::UserController < ApplicationController
 
 
     api :POST, 'api/user/login'
-    param :number, String, required: true
+    param :number, /\A\d{10}\z/, required: true
     param :name, String, required: false
     def login
         user = User.find_by(number: params[:number])
