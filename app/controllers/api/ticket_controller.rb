@@ -9,7 +9,16 @@ class Api::TicketController < ApplicationController
   param :num_ticket, Integer, required: true
   param :fare, Integer, required: true
   def book_ticket
-    if params[:starting_station_id] >= params[:ending_station_id]
+    starting_route_station = RouteStation.find_by(route_id: params[:route_id],
+                                                  station_id: params[:starting_station_id])
+
+    ending_route_station = RouteStation.find_by(route_id: params[:route_id],
+                                                station_id: params[:ending_station_id])
+    if starting_route_station.nil? or ending_route_station.nil?
+      render json: {error: 'Invalid parameters'}, status: :unprocessable_entity
+      return
+    end
+    if starting_route_station.station_order >= ending_route_station.station_order
       render json: {error: 'Invalid parameters'}, status: :unprocessable_entity
       return
     end
