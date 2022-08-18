@@ -1,5 +1,8 @@
 class Api::TicketController < ApplicationController
 
+  include ActionController::HttpAuthentication::Token
+  before_action :authenticate_user, only: [:book_ticket, :get_tickets]
+
   api :POST, 'api/ticket/book_ticket'
   param :user_id, Integer, required: true
   param :bus_id, Integer, required: true
@@ -54,6 +57,18 @@ class Api::TicketController < ApplicationController
     else
       @tickets = Ticket.where(user_id: params[:user_id]).order(created_at: :desc)
                       .includes(:bus, :route, :starting_station, :ending_station).take(params[:size])
+    end
+  end
+
+  def authenticate_user
+    token, _options = token_and_options(request)
+    if token.nil?
+      raise ApplicationController::TokenMissing
+    end
+    row = User.find_by(id: params[:user_id],
+                       token: token)
+    if row.nil?
+      raise ApplicationController::NotAuthorized
     end
   end
 end
